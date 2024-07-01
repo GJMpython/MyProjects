@@ -30,16 +30,18 @@ class NeuralNetwork:
         output = self.forward(X)
         return np.argmax(output, axis=1)
 
-# 加载模型参数
+# 【1】加载模型参数
 model = np.load('model.npz')
 
-# 创建神经网络实例并加载参数
+# 【2】创建神经网络实例并加载参数
 nn = NeuralNetwork(input_size=784, hidden_size=128, output_size=10)
 nn.W1 = model['W1']
 nn.b1 = model['b1']
 nn.W2 = model['W2']
 nn.b2 = model['b2']
 
+# 【3】识别 My_digit 文件夹中的所有图片
+# 图片预处理
 def preprocess_image(image_path):
     img = Image.open(image_path).convert('L')
     img = img.resize((28, 28))
@@ -48,23 +50,16 @@ def preprocess_image(image_path):
     img = img / 255.0  # 归一化
     img = img.flatten()
     return img
-
-# 处理 My_digit 文件夹中的所有图片
 import os
-
 folder_path = 'My_digits'
 image_files = os.listdir(folder_path)
-
+# 显示图像和预测结果
 for image_file in image_files:
     if image_file.endswith('.png') or image_file.endswith('.jpg'):
         image_path = os.path.join(folder_path, image_file)
         hand_img = preprocess_image(image_path)
         hand_img = hand_img.reshape(1, -1)
-
-        # 预测
         predictions = nn.predict(hand_img)
-
-        # 显示图像和预测结果
         img = Image.open(image_path).convert('L')
         plt.imshow(img, cmap='gray')
         plt.title(f'Predicted: {predictions[0]}')
