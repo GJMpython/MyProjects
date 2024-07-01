@@ -49,14 +49,14 @@ class NeuralNetwork:
     # 激活函数的导数
     def sigmoid_derivative(self, z):
         return z * (1 - z)
-
+    # 前向传播函数
     def forward(self, X):
         self.Z1 = np.dot(X, self.W1) + self.b1
         self.A1 = self.sigmoid(self.Z1)
         self.Z2 = np.dot(self.A1, self.W2) + self.b2
         self.A2 = self.sigmoid(self.Z2)
         return self.A2
-
+    # 后向传播函数
     def backward(self, X, y, output):
         self.output_error = y - output
         self.output_delta = self.output_error * self.sigmoid_derivative(output)
@@ -67,7 +67,7 @@ class NeuralNetwork:
         self.b2 += np.sum(self.output_delta, axis=0, keepdims=True) * self.learning_rate
         self.W1 += np.dot(X.T, self.hidden_delta) * self.learning_rate
         self.b1 += np.sum(self.hidden_delta, axis=0, keepdims=True) * self.learning_rate
-
+    # 随机梯度下降法训练网络
     def train(self, X, y, epochs=500, batch_size=32, print_every=10):
         num_samples = X.shape[0]
 
@@ -96,13 +96,14 @@ hidden_size = 128
 output_size = 10
 learning_rate = 0.1
 
+# 【3】训练网络
 nn = NeuralNetwork(input_size, hidden_size, output_size, learning_rate)
 nn.train(train_images, train_labels, epochs=500, print_every=10)
 
-# 保存模型参数
+# 【4】保存模型参数
 np.savez('model.npz', W1=nn.W1, b1=nn.b1, W2=nn.W2, b2=nn.b2)
 
-# 评估网络
+# 【5】评估网络
 predictions = nn.predict(test_images)
 accuracy = np.mean(predictions == np.argmax(test_labels, axis=1))
 print(f"Accuracy on small test set: {accuracy * 100:.2f}%")
